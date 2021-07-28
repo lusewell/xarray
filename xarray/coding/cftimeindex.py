@@ -51,6 +51,11 @@ from xarray.core.utils import is_scalar
 
 from .times import _STANDARD_CALENDARS, cftime_to_nptime, infer_calendar_name
 
+try:
+    import cftime
+except ImportError:
+    cftime = None
+
 
 def named(name, pattern):
     return "(?P<" + name + ">" + pattern + ")"
@@ -96,7 +101,8 @@ def parse_iso8601(datetime_string):
 
 
 def _parse_iso8601_with_reso(date_type, timestr):
-    import cftime
+    if cftime is None:
+        raise ModuleNotFoundError("No module named 'cftime'")
 
     default = date_type(1, 1, 1)
     result = parse_iso8601(timestr)
@@ -171,7 +177,8 @@ def _field_accessor(name, docstring=None, min_cftime_version="0.0"):
     """Adapted from pandas.tseries.index._field_accessor"""
 
     def f(self, min_cftime_version=min_cftime_version):
-        import cftime
+        if cftime is None:
+            raise ModuleNotFoundError("No module named 'cftime'")
 
         version = cftime.__version__
 
@@ -197,7 +204,8 @@ def get_date_type(self):
 
 
 def assert_all_valid_date_type(data):
-    import cftime
+    if cftime is None:
+        raise ModuleNotFoundError("No module named 'cftime'")
 
     if len(data) > 0:
         sample = data[0]
